@@ -1,1 +1,1 @@
-An experimental repo for Project Lace.
+App for Project Lace
