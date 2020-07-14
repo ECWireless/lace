@@ -6,3 +6,13 @@ export const Container = styled.div`
     display: flex;
     flex-direction: column;
 `
+
+export const Flex = styled.div`
+    display: flex;
+    justify-content: space-between;
+`
+
+export const FlexColumn = styled.div`
+    display: flex;
+    flex-direction: column;
+`
