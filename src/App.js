@@ -10,11 +10,12 @@ import { Container, Flex, FlexColumn } from './components/Containers'
 import { H1 } from './components/Typography'
 
 // Config
-const LACE_ID = '0x2FC93840d11b9A280948cCFd0B6802A703ec632A'
+const LACE_ID = '0x0d9FD3f485Bd8D77B8610477785671ae824b1317'
 
 function App() {
 	const [org, setOrg] = useState(null)
 	const [apps, setApps] = useState(null)
+	const [tokenManagerAddress, setTokenManagerAddress] = useState(null)
 	const [token, setToken] = useState(null)
 	const [holders, setHolders] = useState(null)
 	const [appAddress, setAppAddress] = useState('[none selected]')
@@ -26,23 +27,24 @@ function App() {
 				setLoading(true)
 				const org = await connect(LACE_ID, 'thegraph', { chainId: 4 })
 				let apps = await org.apps();
+				let tokenManagerAddress = await org.app('token-manager')
+				tokenManagerAddress = await tokenManagerAddress.address
 		
 				// Get Token Manager App Address
 				// const tokenManagerApp = await org.app('token-manager')
 				const tokenManager = new TokenManager(
 					// Token Manager App Address
-					'0x182b3e1c15c4e313f251898f6fb17c31861554b1',
+					tokenManagerAddress,
 					'https://api.thegraph.com/subgraphs/name/aragon/aragon-tokens-rinkeby'
 				)
 				const token = await tokenManager.token()
 				const holders = await token.holders()
-				console.log(token)
 		
 				setOrg(org)
 				setApps(apps)
+				setTokenManagerAddress(tokenManagerAddress)
 				setToken(token)
 				setHolders(holders)
-				console.log(holders)
 			} catch(e) {
 				console.log('connect error:', e)
 			} finally {
@@ -58,7 +60,7 @@ function App() {
 			<H1>Project Lace</H1>
 			{loading ? <p>Loading...</p> : (
 				<FlexColumn>
-					<h3>Organization Name: <span style={{fontWeight: 'bold'}}>LaceTest1</span></h3>
+					<h3>Organization Name: <span style={{fontWeight: 'bold'}}>LaceTest3</span></h3>
 					<h3>Organization Address:</h3>
 					<p>{org.location}</p>
 					<br />
@@ -72,7 +74,7 @@ function App() {
 						}
 					</Flex>
 					<Card>App Address: {appAddress}</Card>
-					{appAddress === '0x182b3e1c15c4e313f251898f6fb17c31861554b1' && (
+					{appAddress === tokenManagerAddress && (
 						<>
 							<Card>
 								<h2>Token Details:</h2>
