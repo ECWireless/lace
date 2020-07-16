@@ -99,6 +99,8 @@ function App() {
 							</Card>
 						</>
 					)}
+					<h2>View Cred Desitribution:</h2>
+					<a href="https://ecwireless.github.io/lacecred/">LaceCred</a>
 				</FlexColumn>
 			)}
 		</Container>
