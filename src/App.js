@@ -36,6 +36,7 @@ function App() {
 				)
 				const token = await tokenManager.token()
 				const holders = await token.holders()
+				console.log(token)
 		
 				setOrg(org)
 				setApps(apps)
@@ -77,7 +78,7 @@ function App() {
 								<h2>Token Details:</h2>
 								<p>Name: {token.name}</p>
 								<p>Symbol: {token.symbol}</p>
-								<p>Total Supply: {token.totalSupply}</p>
+								<p>Total Supply: {Number(token.totalSupply) / Math.pow(10, 18)}</p>
 								<p>Transferable: {token.transferable ? 'Yes' : 'No'}</p>
 							</Card>
 
@@ -89,7 +90,7 @@ function App() {
 												? '(Elliott)' 
 												: '(Unknown Person'}</span>
 											</h2>
-											<p>Balance: {holder.balance}</p>
+											<p>Balance: {Number(holder.balance)  / Math.pow(10, 18)}</p>
 											<p>Token Address: {holder.tokenAddress}</p>
 										</div>
 									)
