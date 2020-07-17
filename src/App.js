@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from '@aragon/connect'
 import { TokenManager } from '@aragon/connect-thegraph-tokens'
+import { Voting } from '@aragon/connect-thegraph-voting'
 import './App.css';
 
 // Components
@@ -11,6 +12,8 @@ import { H1 } from './components/Typography'
 
 // Config
 const LACE_ID = '0x0d9FD3f485Bd8D77B8610477785671ae824b1317'
+const TOKENS_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/aragon/aragon-tokens-rinkeby'
+const VOTING_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/1hive/aragon-dandelion-voting-rinkeby'
 
 function App() {
 	const [org, setOrg] = useState(null)
@@ -29,17 +32,16 @@ function App() {
 				let apps = await org.apps();
 				let tokenManagerAddress = await org.app('token-manager')
 				tokenManagerAddress = await tokenManagerAddress.address
-		
-				// Get Token Manager App Address
-				// const tokenManagerApp = await org.app('token-manager')
-				const tokenManager = new TokenManager(
-					// Token Manager App Address
-					tokenManagerAddress,
-					'https://api.thegraph.com/subgraphs/name/aragon/aragon-tokens-rinkeby'
-				)
+
+				const tokenManager = new TokenManager(tokenManagerAddress, TOKENS_SUBGRAPH_URL)
 				const token = await tokenManager.token()
 				const holders = await token.holders()
-		
+				// let votingAppAddress = await org.app('dandelion-voting')
+				// votingAppAddress = await votingAppAddress.address
+				// const voting = new Voting(votingAppAddress, VOTING_SUBGRAPH_URL)
+				// const votes = await voting.votes({first: 5})
+				// console.log(votes)
+
 				setOrg(org)
 				setApps(apps)
 				setTokenManagerAddress(tokenManagerAddress)
