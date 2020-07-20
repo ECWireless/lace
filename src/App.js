@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from '@aragon/connect'
 import { TokenManager } from '@aragon/connect-thegraph-tokens'
-import { Voting } from '@aragon/connect-thegraph-voting'
+import { DandelionVoting } from '@1hive/connect-app-dandelion-voting'
 import './App.css';
 
 // Components
@@ -18,11 +18,13 @@ const VOTING_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/1hive/arago
 function App() {
 	const [org, setOrg] = useState(null)
 	const [apps, setApps] = useState(null)
+	const [appAddress, setAppAddress] = useState('[none selected]')
+	const [loading, setLoading] = useState(true)
 	const [tokenManagerAddress, setTokenManagerAddress] = useState(null)
 	const [token, setToken] = useState(null)
 	const [holders, setHolders] = useState(null)
-	const [appAddress, setAppAddress] = useState('[none selected]')
-	const [loading, setLoading] = useState(true)
+	const [votingAddress, setVotingAddress] = useState(null)
+	const [votes, setVotes] = useState(null)
 
 	useEffect(() => {
 		async function initOrg() {
@@ -36,17 +38,19 @@ function App() {
 				const tokenManager = new TokenManager(tokenManagerAddress, TOKENS_SUBGRAPH_URL)
 				const token = await tokenManager.token()
 				const holders = await token.holders()
-				// let votingAppAddress = await org.app('dandelion-voting')
-				// votingAppAddress = await votingAppAddress.address
-				// const voting = new Voting(votingAppAddress, VOTING_SUBGRAPH_URL)
-				// const votes = await voting.votes({first: 5})
-				// console.log(votes)
+				let votingAppAddress = await org.app('dandelion-voting')
+				votingAppAddress = await votingAppAddress.address
+				const voting = new DandelionVoting(votingAppAddress, VOTING_SUBGRAPH_URL)
+				const votes = await voting.votes()
+				console.log(votes[0])
 
 				setOrg(org)
 				setApps(apps)
 				setTokenManagerAddress(tokenManagerAddress)
 				setToken(token)
 				setHolders(holders)
+				setVotingAddress(votingAppAddress)
+				setVotes(votes)
 			} catch(e) {
 				console.log('connect error:', e)
 			} finally {
@@ -70,7 +74,7 @@ function App() {
 					<h4>Apps:</h4>
 					<Flex style={{alignSelf: 'center', width: '100%'}}>
 						{
-							apps.filter(app => app.name !== null).map(app => {
+							apps.filter(app => app.name === 'dandelion-voting' || app.name === 'token-manager').map(app => {
 								return <Button onClick={() => setAppAddress(app.address)} key={app.appId}>{app.name}</Button>
 							})
 						}
@@ -79,7 +83,8 @@ function App() {
 					{appAddress === tokenManagerAddress && (
 						<>
 							<Card>
-								<h2>Token Details:</h2>
+								<h2 style={{fontWeight: 'bold'}}>Token Details:</h2>
+								<br />
 								<p>Name: {token.name}</p>
 								<p>Symbol: {token.symbol}</p>
 								<p>Total Supply: {Number(token.totalSupply) / Math.pow(10, 18)}</p>
@@ -103,6 +108,26 @@ function App() {
 							</Card>
 						</>
 					)}
+					{appAddress === votingAddress && (
+						<>
+							<Card>
+								<h2 style={{fontWeight: 'bold'}}>Votes:</h2>
+							</Card>
+							{votes.map(vote => {
+								return(
+									<Card key={vote.id}>
+										<h1>{vote.metadata}</h1>
+										<br />
+										<p>In favor: {((Number(vote.yea)  / Math.pow(10, 18)) / (Number(token.totalSupply) / Math.pow(10, 18))) * 100}%</p>
+										<p>Yes: {Number(vote.yea)  / Math.pow(10, 18)} {token.symbol}</p>
+										<p>No: {Number(vote.nay)  / Math.pow(10, 18)} {token.symbol}</p>
+									</Card>
+								)
+								
+							})}
+						</>
+					)}
+
 					<h2>View Cred Desitribution:</h2>
 					<a href="https://ecwireless.github.io/lacecred/">LaceCred</a>
 				</FlexColumn>
