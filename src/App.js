@@ -95,9 +95,10 @@ function App() {
 								{holders.map(holder => {
 									return(
 										<div key={holder.address}>
-											<h2>Token Holder 1: {holder.address} <span style={{fontWeight: 'bold'}}>{holder.address === '0x1a9cee6e1d21c3c09fb83a980ea54299f01920cd' 
+											<h2>Token Holder 1: {holder.address} <span style={{fontWeight: 'bold'}}>
+												{holder.address === '0x1a9cee6e1d21c3c09fb83a980ea54299f01920cd' 
 												? '(Elliott)' 
-												: '(Unknown Person'}</span>
+												: '(Thomas)'}</span>
 											</h2>
 											<p>Balance: {Number(holder.balance)  / Math.pow(10, 18)}</p>
 											<p>Token Address: {holder.tokenAddress}</p>
